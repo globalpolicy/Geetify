@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Geetify</string>
+    <string name="hamburger_open">Open</string>
+    <string name="hamburger_close">Close</string>
+    <string name="search_hint">Search YouTube</string>
+
+</resources>

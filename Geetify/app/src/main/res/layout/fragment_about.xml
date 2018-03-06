@@ -1,0 +1,62 @@
+<RelativeLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/about_logo"
+        android:src="@drawable/logo"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:id="@+id/about_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/about_logo"
+        android:layout_marginTop="40dp"
+        android:textStyle="bold"
+        android:textSize="30sp"
+        android:fontFamily="monospace"
+        android:text="Geetify"
+        android:layout_centerHorizontal="true"
+
+        />
+
+    <TextView
+        android:id="@+id/about_author"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/about_title"
+    android:layout_marginTop="30dp"
+    android:textSize="20sp"
+    android:layout_centerHorizontal="true"
+    android:text="Written by globalpolicy"
+    />
+
+    <TextView
+        android:id="@+id/about_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/about_author"
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:text="yciloplabolg@gmail.com"
+        />
+
+    <TextView
+        android:id="@+id/about_credits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/about_contact"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="50dp"
+        android:text="Uses YouTube Search API and yt-mp3-api.com for video to OGG conversion"
+        android:textAlignment="center"
+        />
+
+</RelativeLayout>

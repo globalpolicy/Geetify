@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:key="pref_savedownloads"
+        android:defaultValue="false"
+        android:summary="Automatically add MP3 to library"
+        android:title="Auto save"/>
+    <EditTextPreference android:key="pref_numOfVids"
+        android:defaultValue="3"
+        android:title="Search results"
+        android:summary="Number of videos to display"
+        android:inputType="number"
+        android:hint="Number between 1 and 50 inclusive"
+        />
+    <CheckBoxPreference android:key="pref_autoplayafterdownload"
+        android:defaultValue="false"
+        android:summary="Auto start playing newly downloaded MP3"
+        android:title="Auto play on downloaded"/>
+    <CheckBoxPreference android:key="pref_autoNextSong"
+        android:defaultValue="true"
+        android:summary="Play next song in the library after the current song finishes."
+        android:title="Playlist mode"/>
+</PreferenceScreen>
