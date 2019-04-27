@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong
+import com.geetify.s0ft.geetify.helpers.StringUnescaper
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -13,7 +14,7 @@ import java.net.URL
 class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSongsDownloadStatusListener, private val numOfVidsToSearch: String) : AsyncTask<String, Int, ArrayList<YoutubeSong>>() {
 
     private val apiURLString = "https://www.googleapis.com/youtube/v3/search"
-    private val apiKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    private val apiKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
     interface YoutubeSongsDownloadStatusListener {
         fun progressReporter(percent: Int)
@@ -58,7 +59,7 @@ class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSong
                     val description = responseItemJsonObject.getJSONObject("snippet").getString("description")
                     val hqThumbnailUrl = responseItemJsonObject.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("url")
                     val hqThumbnailBitmap = downloadBitmap(hqThumbnailUrl)
-                    retval.add(YoutubeSong(title, description, videoId, hqThumbnailUrl, publishedAt, hqThumbnailBitmap))
+                    retval.add(YoutubeSong(StringUnescaper.unescapeHtml3(title), description, videoId, hqThumbnailUrl, publishedAt, hqThumbnailBitmap))
                     publishProgress(i, responseItemsJsonArray.length())
                 }
 

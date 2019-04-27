@@ -119,7 +119,7 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
                 mediaPlayer.release();
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".ogg");
+            mediaPlayer.setDataSource(AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".webm");
             mediaPlayer.prepare();
             mediaPlayer.start();
             mediaPlayer.setOnCompletionListener(this);
@@ -128,8 +128,6 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
             ioex.printStackTrace();
         } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
             ccfoesex.printStackTrace();
-        } catch (ExternalStorageNotFoundException esnfex) {
-            esnfex.printStackTrace();
         }
     }
 

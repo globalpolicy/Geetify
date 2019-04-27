@@ -107,28 +107,30 @@ public class SongDownloaderFragment extends Fragment implements HttpGetMp3.MP3Do
 
     private void downloadAndPlayMP3(YoutubeSong currentSong) {
         try {
-            new HttpGetMp3(this).execute(currentSong.getVideoId(), AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".ogg");
-        } catch (ExternalStorageNotFoundException e) {
-            e.printStackTrace();
+            new HttpGetMp3(this,getActivity()).execute(currentSong.getVideoId(), AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".webm");
         } catch (CannotCreateFolderOnExternalStorageException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void progressReporterMP3(int typeOfUpdate, int statusUpdate) {
-        String progressReporterString = "";
-        if (typeOfUpdate == 0) {
-            progressReporterString = "Server's download : " + statusUpdate + "%";
-        } else {
-            progressReporterString = "Downloading MP3 : " + statusUpdate / 1000 + " KB completed";
-        }
+    public void onProgressUpdate(String progressMessage) {
+        String progressReporterString =  progressMessage;
+
         Log.w("YTS", progressReporterString);
         ((TextView) getView().findViewById(R.id.songdescription)).setText(progressReporterString);
     }
 
     @Override
-    public void downloadFinished(int mp3TotalBytesDownloaded) {
+    public void onDownloadError(String error) {
+        Log.w("YTS",error);
+        HelperClass.WriteToLog(error);
+        Toast.makeText(getActivity(),"Song could not be downloaded for some reason. Log file updated.",Toast.LENGTH_LONG).show();
+        ((TextView) getView().findViewById(R.id.songdescription)).setText(currentSong.getDescription());
+    }
+
+    @Override
+    public void onDownloadFinished() {
         songDownloadedFlag = true;
         if (saveSongToLibraryFlag || PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("pref_savedownloads", false)) {
             if (new LibrarySongsManager(getActivity()).addLibrarySong(currentSong))
@@ -137,9 +139,7 @@ public class SongDownloaderFragment extends Fragment implements HttpGetMp3.MP3Do
                 Toast.makeText(getActivity(), "Something went wrong while trying to save to library.", Toast.LENGTH_SHORT).show();
         }
         try {
-            Log.w("YTS", "MP3 downloaded to " + AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".ogg");
-        } catch (ExternalStorageNotFoundException e) {
-            e.printStackTrace();
+            Log.w("YTS", "Music downloaded to " + AppSettings.getMP3StoragePath() + HelperClass.getValidFilename(currentSong.getTitle()) + ".webm");
         } catch (CannotCreateFolderOnExternalStorageException e) {
             e.printStackTrace();
         }

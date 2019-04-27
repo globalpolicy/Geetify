@@ -83,8 +83,8 @@ public class LibrarySongsManager {
             for (YoutubeSong youtubeSong : retrieveLibrarySongs()) {
                 if (youtubeSong.getVideoId().equals(videoId)) {
                     String songFilename = HelperClass.getValidFilename(youtubeSong.getTitle());
-                    if ((new File(AppSettings.getMP3StoragePath() + songFilename + ".ogg").exists())) {
-                        retval = AppSettings.getMP3StoragePath() + songFilename + ".ogg";
+                    if ((new File(AppSettings.getMP3StoragePath() + songFilename + ".webm").exists())) {
+                        retval = AppSettings.getMP3StoragePath() + songFilename + ".webm";
                     }
                 }
             }
@@ -122,10 +122,10 @@ public class LibrarySongsManager {
             for (YoutubeSong youtubeSong : retrieveLibrarySongs()) {
                 MP3ToNotDelete.add(new File(getFilepathFromVideoid(youtubeSong.getVideoId())).getName());
             }
-            File[] mp3Files = AppSettings.getMP3StoragePath_File().listFiles(new FileFilter() {
+            File[] mp3Files =new File(AppSettings.getMP3StoragePath()).listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    return file.getName().endsWith(".ogg") && !MP3ToNotDelete.contains(file.getName());
+                    return file.getName().endsWith(".webm") && !MP3ToNotDelete.contains(file.getName());
                 }
             });
             for (File mp3file : mp3Files) {
