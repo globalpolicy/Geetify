@@ -1,14 +1,19 @@
 package com.geetify.s0ft.geetify;
 
+import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
@@ -20,16 +25,31 @@ import android.widget.TextView;
 
 import com.geetify.s0ft.geetify.baseclasses.BaseActivity;
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong;
+import com.geetify.s0ft.geetify.exceptions.FunctionExtractionException;
 import com.geetify.s0ft.geetify.fragments.FrontPageFragment;
 import com.geetify.s0ft.geetify.fragments.LibraryFragment;
 import com.geetify.s0ft.geetify.fragments.PreferencesFragment;
 import com.geetify.s0ft.geetify.fragments.SlidingPanelBottomToolbarFragment;
 import com.geetify.s0ft.geetify.fragments.SongDownloaderFragment;
+import com.geetify.s0ft.geetify.helpers.AppSettings;
 import com.geetify.s0ft.geetify.listview.ListviewAdapter;
 import com.geetify.s0ft.geetify.network.HttpGetYoutubeSearch;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, LibraryFragment.OnLibrarySongSelectedToPlayListener, SongDownloaderFragment.OnPlayDownloadedSongListener {
 
@@ -57,8 +77,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -80,6 +103,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         ((SlidingUpPanelLayout) findViewById(R.id.slidingLayout)).setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        getWritePermission();
+    }
+
+    private void getWritePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, AppSettings.WRITE_EXTERNAL_STORAGE_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case AppSettings.WRITE_EXTERNAL_STORAGE_CODE:
+                if (grantResults.length > 0) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.w("YTS", "WRITE permission granted");
+                    }
+                }
+        }
     }
 
     private void clearJunk() {
@@ -126,13 +169,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Boolean addToBackStackFlag=!(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof SongDownloaderFragment);
+        Boolean addToBackStackFlag = !(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof SongDownloaderFragment);
 
         switch (item.getItemId()) {
             case R.id.navbar_menu_settings:
                 if (!(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof PreferencesFragment)) {
                     fragmentTransaction.replace(R.id.fragmentContainerId, new PreferencesFragment());
-                    if(addToBackStackFlag) fragmentTransaction.addToBackStack(null);
+                    if (addToBackStackFlag) fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     fragmentTransaction.commit();
                 }
@@ -140,15 +183,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.navbar_menu_library:
                 if (!(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof LibraryFragment)) {
                     fragmentTransaction.replace(R.id.fragmentContainerId, new LibraryFragment());
-                    if(addToBackStackFlag) fragmentTransaction.addToBackStack(null);
+                    if (addToBackStackFlag) fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     fragmentTransaction.commit();
                 }
                 break;
             case R.id.navbar_menu_about:
-                if(!(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof AboutFragment)){
-                    fragmentTransaction.replace(R.id.fragmentContainerId,new AboutFragment());
-                    if(addToBackStackFlag) fragmentTransaction.addToBackStack(null);
+                if (!(fragmentManager.findFragmentById(R.id.fragmentContainerId) instanceof AboutFragment)) {
+                    fragmentTransaction.replace(R.id.fragmentContainerId, new AboutFragment());
+                    if (addToBackStackFlag) fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     fragmentTransaction.commit();
                 }
@@ -214,8 +257,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        SlidingUpPanelLayout slidingUpPanelLayout=findViewById(R.id.slidingLayout);
-        if(slidingUpPanelLayout.getPanelState()== SlidingUpPanelLayout.PanelState.EXPANDED)
+        SlidingUpPanelLayout slidingUpPanelLayout = findViewById(R.id.slidingLayout);
+        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED)
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         else
             super.onBackPressed();

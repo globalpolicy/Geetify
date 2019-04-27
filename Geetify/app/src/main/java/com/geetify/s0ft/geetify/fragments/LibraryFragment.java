@@ -208,7 +208,7 @@ public class LibraryFragment extends Fragment {
                     for (Integer selectedListviewItemPosition : selectedListviewItemPositions) {
                         try {
                             YoutubeSong thisYoutubeSong = listviewAdapter.getItem(selectedListviewItemPosition);
-                            String mp3Filename = HelperClass.getValidFilename(thisYoutubeSong.getTitle()) + ".ogg";
+                            String mp3Filename = HelperClass.getValidFilename(thisYoutubeSong.getTitle()) + ".webm";
                             File mp3FileSrc = new File(sourceDirectoryPath + mp3Filename);
                             File mp3FileDest = new File(destDirectoryPath + mp3Filename);
                             if (HelperClass.moveFile(mp3FileSrc, mp3FileDest)) {
@@ -227,8 +227,6 @@ public class LibraryFragment extends Fragment {
                     if (noOfFilesMoved > 0)
                         loadSavedLibrarySongs();
                 }
-            } catch (ExternalStorageNotFoundException esnfex) {
-                esnfex.printStackTrace();
             } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
                 ccfoesex.printStackTrace();
             }
@@ -240,7 +238,7 @@ public class LibraryFragment extends Fragment {
         try {
             ArrayList<Uri> audioUris = new ArrayList<Uri>();
             for (Integer selectedListviewItemPosition : selectedListviewItemPositions) {
-                String mp3Filename = HelperClass.getValidFilename(listviewAdapter.getItem(selectedListviewItemPosition).getTitle()) + ".ogg";
+                String mp3Filename = HelperClass.getValidFilename(listviewAdapter.getItem(selectedListviewItemPosition).getTitle()) + ".webm";
                 Uri mp3ContentUri = FileProvider.getUriForFile(getActivity(), "com.geetify.s0ft.geetify.myfileprovider", new File(AppSettings.getMP3StoragePath(), mp3Filename));
                 audioUris.add(mp3ContentUri);
             }
@@ -250,8 +248,6 @@ public class LibraryFragment extends Fragment {
             shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, audioUris);
             shareIntent.setType("audio/*");
             startActivity(Intent.createChooser(shareIntent, "Share songs to.."));
-        } catch (ExternalStorageNotFoundException esnfex) {
-            esnfex.printStackTrace();
         } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
             ccfoesex.printStackTrace();
         } catch (IllegalArgumentException iaex){
