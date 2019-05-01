@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geetify.s0ft.geetify">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,20 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <provider android:name="android.support.v4.content.FileProvider"
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
             android:authorities="com.geetify.s0ft.geetify.myfileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"/>
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".MainActivity" android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -39,5 +40,18 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <activity android:name=".TokenActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <data android:scheme="com.geetify.s0ft.geetify"/>
+
+            </intent-filter>
+        </activity>
+
     </application>
+
 </manifest>

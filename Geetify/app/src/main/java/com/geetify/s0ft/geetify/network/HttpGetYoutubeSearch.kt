@@ -1,37 +1,65 @@
 package com.geetify.s0ft.geetify.network
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
+import android.preference.PreferenceManager
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong
+import com.geetify.s0ft.geetify.helpers.AppSettings
+import com.geetify.s0ft.geetify.helpers.GoogleTokenHelper
 import com.geetify.s0ft.geetify.helpers.StringUnescaper
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
+import java.io.BufferedInputStream
+import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 
-class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSongsDownloadStatusListener, private val numOfVidsToSearch: String) : AsyncTask<String, Int, ArrayList<YoutubeSong>>() {
+class HttpGetYoutubeSearch(private val activityContext: WeakReference<Context>, private val youtubeSongsDownloadListener: YoutubeSongsDownloadStatusListener, private val numOfVidsToSearch: String) : AsyncTask<String, Int, ArrayList<YoutubeSong>>() {
 
     private val apiURLString = "https://www.googleapis.com/youtube/v3/search"
-    private val apiKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    private var tokenError = false
 
     interface YoutubeSongsDownloadStatusListener {
         fun progressReporter(percent: Int)
         fun downloadFinished(youtubeSongs: ArrayList<YoutubeSong>)
+        fun apiTokenInvalidError()//used to signal revoked access
     }
 
     override fun doInBackground(vararg params: String): ArrayList<YoutubeSong> {
-        val youtubeSongs = retrieveYoutubeSnippets(params)//retrieves a list of relevant YoutubeSong objects
-        return youtubeSongs
+        if (activityContext.get() != null) {
+            val youtubeSongs = retrieveYoutubeSnippets(params)//retrieves a list of relevant YoutubeSong objects
+            return youtubeSongs
+        } else {
+            return ArrayList()
+        }
     }
 
+
     fun retrieveYoutubeSnippets(params: Array<out String>): ArrayList<YoutubeSong> {
+        if (GoogleTokenHelper.hasTokenExpired(activityContext.get())) {
+            //if token has expired, request a new token using the refresh token
+            if (!refreshAccessToken()) {
+                //access token couldn't be refreshed. ask the user to re-do the OAuth2 permissions
+                tokenError = true
+                return ArrayList()
+            }
+        }
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activityContext.get())
+        val accessToken = sharedPreferences.getString("access_token", "")
+        if (accessToken.equals("")) {
+            tokenError = true
+            return ArrayList()
+        }
+
         val keyWord: String = params[0]
         val retval = ArrayList<YoutubeSong>()
 
         val GETQuery: String = with(Uri.Builder()) {
-            appendQueryParameter("key", apiKey)
             appendQueryParameter("part", "snippet")
             appendQueryParameter("type", "video")
             appendQueryParameter("q", keyWord)
@@ -46,7 +74,13 @@ class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSong
                 doInput = true
                 connectTimeout = 5000
                 readTimeout = 5000
-                connect()
+                setRequestProperty("Authorization", "Bearer ${accessToken}")
+                val responseCode = responseCode
+                if (responseCode == 401) {
+                    //authorization has been revoked by the user
+                    tokenError = true
+                    return ArrayList()
+                }
 
                 val responseString = inputStream.reader().use { it.readText() }
                 val responseJsonObject = JSONObject(responseString)
@@ -71,6 +105,41 @@ class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSong
         return retval
     }
 
+    fun refreshAccessToken(): Boolean {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activityContext.get())
+        val refreshToken=sharedPreferences.getString("refresh_token","")
+        if(refreshToken.equals("")){
+            return false
+        }
+
+        with(URL("https://www.googleapis.com/oauth2/v4/token").openConnection() as HttpURLConnection){
+            doOutput=true
+            requestMethod="POST"
+            val postContent="refresh_token=${refreshToken}&client_id=${AppSettings.getClientId()}&grant_type=refresh_token"
+            outputStream.write(postContent.toByteArray())
+
+            if(responseCode!=200){
+                //authorization has been revoked
+                return false
+            }
+
+            val responseContent=inputStream.bufferedReader().readText()
+            try{
+                val responseJson=JSONObject(responseContent)
+                val accessToken=responseJson.getString("access_token")
+                val expiresIn=responseJson.getLong("expires_in")
+
+                val preferenceEditor=sharedPreferences.edit()
+                preferenceEditor.putString("access_token",accessToken)
+                preferenceEditor.putLong("expires_in",expiresIn)
+                preferenceEditor.apply()
+                return true
+            }catch(jsex:JSONException){
+                return false
+            }
+        }
+    }
+
     fun downloadBitmap(thumbnailUrl: String): Bitmap {
         var retval: Bitmap? = null
 
@@ -86,7 +155,12 @@ class HttpGetYoutubeSearch(private val youtubeSongsDownloadListener: YoutubeSong
     }
 
     override fun onPostExecute(result: ArrayList<YoutubeSong>) {
-        this.youtubeSongsDownloadListener.downloadFinished(result)
+        if (!tokenError) {
+            this.youtubeSongsDownloadListener.downloadFinished(result)
+        } else {
+            this.youtubeSongsDownloadListener.apiTokenInvalidError()
+        }
+
     }
 
     override fun onProgressUpdate(vararg values: Int?) {

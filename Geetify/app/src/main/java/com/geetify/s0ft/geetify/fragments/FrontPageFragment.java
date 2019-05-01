@@ -1,6 +1,7 @@
 package com.geetify.s0ft.geetify.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.geetify.s0ft.geetify.TokenActivity;
 import com.geetify.s0ft.geetify.network.HttpGetYoutubeSearch;
 import com.geetify.s0ft.geetify.listview.ListviewAdapter;
 import com.geetify.s0ft.geetify.MainActivity;
@@ -78,5 +80,12 @@ public class FrontPageFragment extends Fragment implements HttpGetYoutubeSearch.
         ((TextView) (getActivity().findViewById(R.id.empty))).setText(percent + "%");
     }
 
-
+    @Override
+    public void apiTokenInvalidError() {
+        Intent newActivityIntent = new Intent(getActivity(), TokenActivity.class);
+        newActivityIntent.putExtra("must_reauth",true);
+        newActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(newActivityIntent);
+        getActivity().finish();
+    }
 }

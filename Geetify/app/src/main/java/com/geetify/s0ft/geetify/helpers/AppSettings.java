@@ -3,8 +3,10 @@ package com.geetify.s0ft.geetify.helpers;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
@@ -26,6 +28,7 @@ public class AppSettings {
 
     private static String libraryFileName = "mylibrary.bin";
     public static final int WRITE_EXTERNAL_STORAGE_CODE = 0;
+    private static final String OAuth_clientId="995050315289-u10p4s4bsa8kakoi1egbjc4srt39rkt3.apps.googleusercontent.com";
 
     public static String getAppDataStoragePath(Context context) {
         return context.getFilesDir().getPath() + "/";
@@ -60,6 +63,10 @@ public class AppSettings {
         return retval.getAbsolutePath() + "/";
     }
 
+
+
+
+
     //Thanks to http://www.regexplanet.com/advanced/java/index.html for providing properly formatted Java strings of regex patterns.
     //Lack of literal strings in Java is painful
     public static String[] getDecryptionFunctionNameFilterRegexPatterns() {
@@ -76,5 +83,14 @@ public class AppSettings {
                 "\\(([^)]*)\\)\\s*" +
                 "\\{([^}]+)\\}").replace("%s", Pattern.quote(functionName));
     }
+
+    public static String getClientId(){
+        return AppSettings.OAuth_clientId;
+    }
+
+    public static String getRedirectUri(){
+        return "com.geetify.s0ft.geetify:/oauth2redirect";
+    }
+
 
 }

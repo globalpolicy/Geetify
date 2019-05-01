@@ -6,16 +6,18 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +27,6 @@ import android.widget.TextView;
 
 import com.geetify.s0ft.geetify.baseclasses.BaseActivity;
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong;
-import com.geetify.s0ft.geetify.exceptions.FunctionExtractionException;
 import com.geetify.s0ft.geetify.fragments.FrontPageFragment;
 import com.geetify.s0ft.geetify.fragments.LibraryFragment;
 import com.geetify.s0ft.geetify.fragments.PreferencesFragment;
@@ -36,20 +37,8 @@ import com.geetify.s0ft.geetify.listview.ListviewAdapter;
 import com.geetify.s0ft.geetify.network.HttpGetYoutubeSearch;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, LibraryFragment.OnLibrarySongSelectedToPlayListener, SongDownloaderFragment.OnPlayDownloadedSongListener {
 
@@ -84,6 +73,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         clearJunk();
 
@@ -136,6 +126,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.option_menu, menu);
@@ -159,7 +151,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             getArrayAdapter().clear();
             findViewById(R.id.youtubeSearchProgress).setVisibility(View.VISIBLE);
             ((TextView) (findViewById(R.id.empty))).setText("");
-            new HttpGetYoutubeSearch(frontPageFragment, PreferenceManager.getDefaultSharedPreferences(this).getString("pref_numOfVids", "5")).execute(query);
+            new HttpGetYoutubeSearch(new WeakReference<Context>(this),frontPageFragment, PreferenceManager.getDefaultSharedPreferences(this).getString("pref_numOfVids", "5")).execute(query);
         }
     }
 
