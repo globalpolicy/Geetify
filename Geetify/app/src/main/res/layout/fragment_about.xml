@@ -55,7 +55,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:layout_marginLeft="50dp"
-        android:text="Uses YouTube Search API and yt-mp3-api.com for video to OGG conversion"
+        android:text="Uses YouTube Data API and youtube-dl logic for retrieving DASH audio streams from YouTube"
         android:textAlignment="center"
         />
 

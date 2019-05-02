@@ -239,7 +239,7 @@ public class LibraryFragment extends Fragment {
             ArrayList<Uri> audioUris = new ArrayList<Uri>();
             for (Integer selectedListviewItemPosition : selectedListviewItemPositions) {
                 String mp3Filename = HelperClass.getValidFilename(listviewAdapter.getItem(selectedListviewItemPosition).getTitle()) + ".webm";
-                Uri mp3ContentUri = FileProvider.getUriForFile(getActivity(), "com.geetify.s0ft.geetify.myfileprovider", new File(AppSettings.getMP3StoragePath(), mp3Filename));
+                Uri mp3ContentUri = FileProvider.getUriForFile(getActivity(), "com.geetify.s0ft.geetify.fileprovider", new File(AppSettings.getMP3StoragePath(), mp3Filename));
                 audioUris.add(mp3ContentUri);
             }
 
@@ -250,7 +250,7 @@ public class LibraryFragment extends Fragment {
             startActivity(Intent.createChooser(shareIntent, "Share songs to.."));
         } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
             ccfoesex.printStackTrace();
-        } catch (IllegalArgumentException iaex){
+        } catch (IllegalArgumentException iaex) {
             iaex.printStackTrace();
         }
     }

@@ -15,18 +15,18 @@
 
 
         <provider
+            android:authorities="com.geetify.s0ft.geetify.fileprovider"
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.geetify.s0ft.geetify.myfileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
         </provider>
-
+        
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            >
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -42,13 +42,14 @@
 
         <activity android:name=".TokenActivity">
             <intent-filter>
-                <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.BROWSABLE"/>
                 <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
                 <data android:scheme="com.geetify.s0ft.geetify"/>
-
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 

@@ -1,23 +1,11 @@
 package com.geetify.s0ft.geetify.helpers;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
-import com.geetify.s0ft.geetify.R;
 import com.geetify.s0ft.geetify.exceptions.CannotCreateFolderOnExternalStorageException;
-import com.geetify.s0ft.geetify.exceptions.ExternalStorageNotFoundException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
