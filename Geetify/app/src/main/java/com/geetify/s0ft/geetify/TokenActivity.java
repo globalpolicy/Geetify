@@ -3,6 +3,7 @@ package com.geetify.s0ft.geetify;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,6 +41,10 @@ import java.util.HashMap;
 
 public class TokenActivity extends AppCompatActivity {
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

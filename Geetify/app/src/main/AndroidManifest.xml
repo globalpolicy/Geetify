@@ -15,18 +15,19 @@
 
 
         <provider
-            android:authorities="com.geetify.s0ft.geetify.fileprovider"
             android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.geetify.s0ft.geetify.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
-        
+
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
-            >
+            android:configChanges="screenSize|orientation"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -40,16 +41,19 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <activity android:name=".TokenActivity">
+        <activity
+            android:name=".TokenActivity"
+            android:configChanges="screenSize|orientation">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="com.geetify.s0ft.geetify"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.geetify.s0ft.geetify" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

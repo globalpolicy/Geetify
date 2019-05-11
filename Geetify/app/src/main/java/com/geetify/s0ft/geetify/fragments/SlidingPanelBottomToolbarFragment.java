@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geetify.s0ft.geetify.LibrarySongsManager;
 import com.geetify.s0ft.geetify.R;
@@ -202,6 +203,8 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
                     playSongInExpandedState(new LibrarySongsManager(getActivity()).getNextSongFromLibrary(this.currentSong));
                 } catch (NoSongFoundException e) {
                     Log.w("YTS", "No next song found!");
+                } catch (CannotCreateFolderOnExternalStorageException e) {
+                    Toast.makeText(getActivity(),"Cannot create folder on external storage.",Toast.LENGTH_SHORT).show();
                 }
             }
         } else if (viewId == R.id.slidingPanelskipToPrevious) {
@@ -210,6 +213,8 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
                     playSongInExpandedState(new LibrarySongsManager(getActivity()).getPreviousSongFromLibrary(this.currentSong));
                 } catch (NoSongFoundException e) {
                     Log.w("YTS", "No previous song found!");
+                } catch (CannotCreateFolderOnExternalStorageException e) {
+                    Toast.makeText(getActivity(),"Cannot create folder on external storage.",Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -274,6 +279,8 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
                         playSongInCollapsedState(new LibrarySongsManager(getActivity()).getNextSongFromLibrary(currentSong));
                     } catch (NoSongFoundException e) {
                         Log.w("YTS", e.getMessage());
+                    } catch (CannotCreateFolderOnExternalStorageException e) {
+                        Toast.makeText(getActivity(),"Cannot create folder on external storage.",Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case EXPANDED:
@@ -281,6 +288,8 @@ public class SlidingPanelBottomToolbarFragment extends Fragment implements View.
                         playSongInExpandedState(new LibrarySongsManager(getActivity()).getNextSongFromLibrary(currentSong));
                     } catch (NoSongFoundException e) {
                         Log.w("YTS", e.getMessage());
+                    } catch (CannotCreateFolderOnExternalStorageException e) {
+                        Toast.makeText(getActivity(),"Cannot create folder on external storage.",Toast.LENGTH_SHORT).show();
                     }
                     break;
             }

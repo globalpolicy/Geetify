@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.geetify.s0ft.geetify.R;
 import com.geetify.s0ft.geetify.exceptions.CannotCreateFolderOnExternalStorageException;
 import com.geetify.s0ft.geetify.exceptions.FunctionExtractionException;
 import com.geetify.s0ft.geetify.helpers.AppSettings;
@@ -57,7 +56,7 @@ public class HttpGetMp3 extends AsyncTask<String, String, Boolean> {
             publishProgress("Downloading video webpage...");
             URL url = new URL(youtubeURL);
             URLConnection urlConnection = url.openConnection();
-            urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0");
+            urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36");
             InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
             ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
             int byte_ = inputStream.read();
@@ -153,8 +152,8 @@ public class HttpGetMp3 extends AsyncTask<String, String, Boolean> {
             ByteArrayOutputStream audioByteBuffer = new ByteArrayOutputStream();
 
             while (downloadedLength < shortestContentLength) {
-                audioUrlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0");
-                audioUrlConnection.setRequestProperty("Range", "bytes=" + String.valueOf(downloadedLength) + "-" + String.valueOf(downloadedLength + chunksize - 1));
+                audioUrlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36");
+                audioUrlConnection.setRequestProperty("Range", "bytes=" + (downloadedLength) + "-" + (downloadedLength + chunksize - 1));
 
                 BufferedInputStream audioInputStream = new BufferedInputStream(audioUrlConnection.getInputStream());
 

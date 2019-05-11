@@ -6,27 +6,27 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geetify.s0ft.geetify.baseclasses.BaseActivity;
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong;
+import com.geetify.s0ft.geetify.exceptions.CannotCreateFolderOnExternalStorageException;
 import com.geetify.s0ft.geetify.fragments.FrontPageFragment;
 import com.geetify.s0ft.geetify.fragments.LibraryFragment;
 import com.geetify.s0ft.geetify.fragments.PreferencesFragment;
@@ -65,7 +65,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return arrayAdapter;
     }
 
-
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,16 +119,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void clearJunk() {
-        final LibrarySongsManager librarySongsManager = new LibrarySongsManager(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                librarySongsManager.cleanupNonLibraryMP3AndPNG();
-            }
-        }).start();
+        try {
+            final LibrarySongsManager librarySongsManager = new LibrarySongsManager(this);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    librarySongsManager.cleanupNonLibraryMP3AndPNG();
+                }
+            }).start();
+        } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
+            Toast.makeText(this, "Cannot create folder on external storage.", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
-
 
 
     @Override
@@ -151,7 +158,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             getArrayAdapter().clear();
             findViewById(R.id.youtubeSearchProgress).setVisibility(View.VISIBLE);
             ((TextView) (findViewById(R.id.empty))).setText("");
-            new HttpGetYoutubeSearch(new WeakReference<Context>(this),frontPageFragment, PreferenceManager.getDefaultSharedPreferences(this).getString("pref_numOfVids", "5")).execute(query);
+            new HttpGetYoutubeSearch(new WeakReference<Context>(this), frontPageFragment, PreferenceManager.getDefaultSharedPreferences(this).getString("pref_numOfVids", "5")).execute(query);
         }
     }
 

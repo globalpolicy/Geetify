@@ -14,20 +14,20 @@ import java.util.regex.Pattern;
 
 public class AppSettings {
 
-    private static String libraryFileName = "mylibrary.bin";
+    private static String libraryFileName = "library.bin";
     public static final int WRITE_EXTERNAL_STORAGE_CODE = 0;
     private static final String OAuth_clientId="995050315289-u10p4s4bsa8kakoi1egbjc4srt39rkt3.apps.googleusercontent.com";
 
-    public static String getAppDataStoragePath(Context context) {
-        return context.getFilesDir().getPath() + "/";
+    public static String getAppDataStoragePath() throws CannotCreateFolderOnExternalStorageException {
+        return getMP3StoragePath();
     }
 
     public static File getAppDataStoragePath_File(Context context) {
         return context.getFilesDir();
     }
 
-    public static String getLibraryFile(Context context) {
-        return getAppDataStoragePath(context) + libraryFileName;
+    public static String getLibraryFile() throws CannotCreateFolderOnExternalStorageException{
+        return getAppDataStoragePath() + libraryFileName;
     }
 
 

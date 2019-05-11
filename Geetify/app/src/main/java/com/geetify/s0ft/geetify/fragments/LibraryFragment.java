@@ -73,7 +73,7 @@ public class LibraryFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        listviewAdapter = new ListviewAdapter4Library(getActivity(), R.layout.row_item_library, this.libraryList);
+        listviewAdapter = new ListviewAdapter4Library(getActivity(), R.layout.row_item_library, this.libraryList, selectedListviewItemPositions);
         final ListView librarySongsList = getActivity().findViewById(R.id.librarySongsListview);
         librarySongsList.setAdapter(listviewAdapter);
         loadSavedLibrarySongs();
@@ -83,11 +83,11 @@ public class LibraryFragment extends Fragment {
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
                 if (b) {
-                    librarySongsList.getChildAt(i - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.LTGRAY);
+                    librarySongsList.getChildAt(i - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.LTGRAY);//this alone doesn't work. has to be done in getView of adapter as well
                     selectedListviewItemPositions.add(i);
                 } else {
-                    librarySongsList.getChildAt(i - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.TRANSPARENT);
-                    selectedListviewItemPositions.remove(Integer.valueOf(i));
+                    librarySongsList.getChildAt(i - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.TRANSPARENT);//this alone doesn't work. has to be done in getView of adapter as well
+                    selectedListviewItemPositions.remove(selectedListviewItemPositions.indexOf(i));
                 }
                 actionMode.setTitle(selectedListviewItemPositions.size() + " items selected");
             }
@@ -121,19 +121,30 @@ public class LibraryFragment extends Fragment {
 
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
-                for (Integer selectedListviewItemPos : selectedListviewItemPositions) {
-                    librarySongsList.getChildAt(selectedListviewItemPos - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.TRANSPARENT);
+                try {/*
+                    for (Integer selectedListviewItemPos : selectedListviewItemPositions) {
+                        //librarySongsList.getChildAt(selectedListviewItemPos - librarySongsList.getFirstVisiblePosition()).setBackgroundColor(Color.TRANSPARENT);
+                    }*/
+                    selectedListviewItemPositions.clear();
+                } catch (NullPointerException npex) {
+                    //if back button is pressed while selection is on
                 }
+
             }
         });
 
         librarySongsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                boolean doesSongExist = new LibrarySongsManager(getActivity()).doesSongExist(listviewAdapter.getItem(i).getVideoId());
-                if (doesSongExist) {
-                    playSong(listviewAdapter.getItem(i));
+                try {
+                    boolean doesSongExist = new LibrarySongsManager(getActivity()).doesSongExist(listviewAdapter.getItem(i).getVideoId());
+                    if (doesSongExist) {
+                        playSong(listviewAdapter.getItem(i));
+                    }
+                } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
+                    Toast.makeText(getActivity(), "Cannot create folder on external storage.", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
     }
@@ -182,13 +193,18 @@ public class LibraryFragment extends Fragment {
             songsToRemove.add(listviewAdapter.getItem(selectedListviewItemPosition));
         }
 
-        Integer noOfRemovedSongs = 0;
-        if ((noOfRemovedSongs = new LibrarySongsManager(getActivity()).removeSongsFromLibrary(songsToRemove)) > 0) {
-            loadSavedLibrarySongs();
-            Toast.makeText(getActivity(), noOfRemovedSongs + " songs removed.", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getActivity(), "Selected songs could not be removed!", Toast.LENGTH_SHORT).show();
+        try {
+            Integer noOfRemovedSongs = 0;
+            if ((noOfRemovedSongs = new LibrarySongsManager(getActivity()).removeSongsFromLibrary(songsToRemove)) > 0) {
+                loadSavedLibrarySongs();
+                Toast.makeText(getActivity(), noOfRemovedSongs + " songs removed.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Selected songs could not be removed!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (CannotCreateFolderOnExternalStorageException ccfoesex) {
+            Toast.makeText(getActivity(), "Cannot create folder on external storage.", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 

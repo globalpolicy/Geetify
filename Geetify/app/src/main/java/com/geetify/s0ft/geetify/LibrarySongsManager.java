@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 
 import com.geetify.s0ft.geetify.datamodels.LibrarySong;
 import com.geetify.s0ft.geetify.datamodels.YoutubeSong;
+import com.geetify.s0ft.geetify.exceptions.CannotCreateFolderOnExternalStorageException;
 import com.geetify.s0ft.geetify.exceptions.NoSongFoundException;
 import com.geetify.s0ft.geetify.helpers.AppSettings;
 import com.geetify.s0ft.geetify.helpers.HelperClass;
@@ -30,9 +31,9 @@ public class LibrarySongsManager {
     private Context context;
     private String savePath;
 
-    public LibrarySongsManager(Context context) {
+    public LibrarySongsManager(Context context) throws CannotCreateFolderOnExternalStorageException {
         this.context = context;
-        this.savePath = AppSettings.getLibraryFile(context);
+        this.savePath = AppSettings.getLibraryFile();
     }
 
     public boolean addLibrarySong(YoutubeSong youtubeSong) {
@@ -44,7 +45,7 @@ public class LibrarySongsManager {
 
             ArrayList<LibrarySong> librarySongsList = new ArrayList<>();
             for (YoutubeSong eachYoutubeSong : youtubeSongs) {
-                eachYoutubeSong.getHqThumbnailBitmap().compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(AppSettings.getAppDataStoragePath(context) + eachYoutubeSong.getVideoId() + ".png", false));
+                eachYoutubeSong.getHqThumbnailBitmap().compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(AppSettings.getAppDataStoragePath() + eachYoutubeSong.getVideoId() + ".png", false));
                 librarySongsList.add(new LibrarySong(eachYoutubeSong.getTitle(), eachYoutubeSong.getDescription(), eachYoutubeSong.getVideoId(), eachYoutubeSong.getHqThumbnailUrl(), eachYoutubeSong.getVideoId(), eachYoutubeSong.getPublishedDate()));
             }
             LibrarySongs librarySongs = new LibrarySongs(librarySongsList);
@@ -60,13 +61,13 @@ public class LibrarySongsManager {
         return retval;
     }
 
-    public ArrayList<YoutubeSong> retrieveLibrarySongs() throws IOException, ClassNotFoundException {
+    public ArrayList<YoutubeSong> retrieveLibrarySongs() throws IOException, ClassNotFoundException,CannotCreateFolderOnExternalStorageException {
         ArrayList<YoutubeSong> retval = new ArrayList<>();
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(this.savePath));
             LibrarySongs librarySongs = (LibrarySongs) objectInputStream.readObject();
             for (LibrarySong librarySong : librarySongs.getListOfLibrarySongs()) {
-                retval.add(new YoutubeSong(librarySong.getTitle(), librarySong.getDescription(), librarySong.getVideoId(), librarySong.getHqThumbnailUrl(), librarySong.getPublishedDate(), BitmapFactory.decodeFile(AppSettings.getAppDataStoragePath(context) + librarySong.getHqThumbnailFilename() + ".png")));
+                retval.add(new YoutubeSong(librarySong.getTitle(), librarySong.getDescription(), librarySong.getVideoId(), librarySong.getHqThumbnailUrl(), librarySong.getPublishedDate(), BitmapFactory.decodeFile(AppSettings.getAppDataStoragePath() + librarySong.getHqThumbnailFilename() + ".png")));
             }
             objectInputStream.close();
         } catch (FileNotFoundException fnfex) {

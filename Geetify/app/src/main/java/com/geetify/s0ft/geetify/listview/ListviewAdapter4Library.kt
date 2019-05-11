@@ -1,6 +1,7 @@
 package com.geetify.s0ft.geetify.listview
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +15,20 @@ import com.geetify.s0ft.geetify.datamodels.YoutubeSong
  * Created by s0ft on 2/11/2018.
  */
 
-class ListviewAdapter4Library(context: Context, listItemLayoutId: Int, listOfYoutubeSongs: ArrayList<YoutubeSong>) : ArrayAdapter<YoutubeSong>(context, listItemLayoutId, listOfYoutubeSongs) {
+//Development troubleshoots: https://stackoverflow.com/questions/14451798/listview-highlight-move-when-scrolling
 
-    var layoutInflater: LayoutInflater
-    var listItemLayoutId: Int
-    var listOfYoutubeSongs: ArrayList<YoutubeSong>
+class ListviewAdapter4Library(context: Context, listItemLayoutId: Int, listOfYoutubeSongs: ArrayList<YoutubeSong>, selectedSongsPosition:ArrayList<Int>) : ArrayAdapter<YoutubeSong>(context, listItemLayoutId, listOfYoutubeSongs) {
+
+    private var layoutInflater: LayoutInflater
+    private var listItemLayoutId: Int
+    private var listOfYoutubeSongs: ArrayList<YoutubeSong>
+    private var selectedSongsPosition:ArrayList<Int>
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         this.listItemLayoutId = listItemLayoutId
         this.listOfYoutubeSongs = listOfYoutubeSongs
+        this.selectedSongsPosition=selectedSongsPosition
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
@@ -39,12 +44,19 @@ class ListviewAdapter4Library(context: Context, listItemLayoutId: Int, listOfYou
             listRowView = convertView
             listRowHolder = listRowView.tag as ListItemHolder
         }
+        if(position in selectedSongsPosition){
+            listRowView.setBackgroundColor(Color.LTGRAY)
+        }else{
+            listRowView.setBackgroundColor(Color.TRANSPARENT)
+        }
         listRowHolder.songTitleTextView?.text = listOfYoutubeSongs[position].title
         listRowHolder.songPublishedDateTextView?.text = listOfYoutubeSongs[position].publishedDate
         listRowHolder.songThumbnailImageView?.setImageBitmap(listOfYoutubeSongs[position].hqThumbnailBitmap)
 
         return listRowView
     }
+
+
 
     private class ListItemHolder(rowLayoutView: View?) {
         val songTitleTextView: TextView?
